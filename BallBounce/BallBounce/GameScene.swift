@@ -10,21 +10,30 @@ import SpriteKit
 import GameplayKit
 import CoreMotion
 
+/* Control the game state
+    playing is when the game is runing in a level.
+    gameOver is when a level is completed
+    menu is when the user is not in a game level.
+*/
+enum GameState {
+    case playing, gameOver, menu
+}
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var ballLayer: SKNode!
-    var ball1: Ball!
-    var ball2: Ball!
+    var ball1: Ball! // remove this later, will become ball spawn point
     var ballArray: [Ball] = []
     var motionManager: CMMotionManager!
-    var ballLimit: Int = 50
-    var score: Int = 0
+    var ballLimit: Int = 50 // eventually this will change based on which lelvel is loaded
+    var score: Int = 0 // start at zero for each level, eventually will store hi-score for each level
     var scoreLabel: SKLabelNode!
-    var scoreUp: ScoreArea!
-    var scoreDown: ScoreArea!
-    var testObstacle: Obstacle!
+    var scoreUp: ScoreArea! //    these are for testing. eventually replace with an array
+    var scoreDown: ScoreArea! //  of ScoreArea to be populated based on the level
+    var testObstacle: Obstacle! // will eventually change this to an array obstacles
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 /* 60 FPS */
     var spawnTimer: CFTimeInterval = 0
+    var gameState: GameState = .playing
+    var restartButton: MSButtonNode!
     
     override func didMove(to view: SKView) {
         
@@ -52,17 +61,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for ball in ballArray {
             if let data = motionManager.accelerometerData {
                 ball.position.x += CGFloat(Double((data.acceleration.x)) * 20)
-      //          ball.position.y += CGFloat(Double((data.acceleration.y)) * 10)
                 if ball.position.y < -20 {
                     ball.removeFromParent()
                 }
             }
         }
-        if let data = motionManager.accelerometerData {
+      /*  if let data = motionManager.accelerometerData {
              ball1.position.x += CGFloat(Double((data.acceleration.x)) * 20)
              ball1.position.y += CGFloat(Double((data.acceleration.y)) * 10)
-        }
-     
+        } */
+        
         if ballArray.count <= ballLimit {
             spawnBalls()
             spawnTimer += fixedDelta
@@ -92,14 +100,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let nodeA = contactA.node!
         let nodeB = contactB.node!
         
-   /*     if ( type(of: nodeA) == Obstacle.self && type(of: nodeB) == Ball.self ) || ( type(of: nodeA) == Ball.self && type(of: nodeB) == Obstacle.self ) {
+        if ( type(of: nodeA) == Obstacle.self && type(of: nodeB) == Ball.self ) || ( type(of: nodeA) == Ball.self && type(of: nodeB) == Obstacle.self ) {
             if type(of: nodeA) == Ball.self {
-                nodeA.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1000))
+                nodeA.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1))
+                return
             }
-        } else {
-            nodeB.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1000))
-        } */
-        
+         else { // this may be hitting the outer if statement. make into an else if
+            nodeB.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1))
+            return
+            }
+        }
         // code that checks if a ball comes in contact with  a scoreArea
         if ( type(of: nodeA) == Ball.self &&  nodeB.name == "scoreUp" ) || ( nodeA.name == "scoreUp" && type(of: nodeB) == Ball.self ){
             /* Increment score */

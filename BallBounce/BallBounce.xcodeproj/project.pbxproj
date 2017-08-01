@@ -19,6 +19,8 @@
 		8C589A621F26305B00E63DD1 /* MSButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C589A611F26305B00E63DD1 /* MSButtonNode.swift */; };
 		8C589A641F27803600E63DD1 /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C589A631F27803600E63DD1 /* Ball.swift */; };
 		8CAE168A1F2BAEC300672226 /* Obstacle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAE16891F2BAEC300672226 /* Obstacle.swift */; };
+		8CAE168C1F2FC51300672226 /* Levels1.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8CAE168B1F2FC51300672226 /* Levels1.sks */; };
+		8CAE168E1F30B9A700672226 /* Area1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAE168D1F30B9A700672226 /* Area1.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		8C589A611F26305B00E63DD1 /* MSButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MSButtonNode.swift; path = ../MSButtonNode.swift; sourceTree = "<group>"; };
 		8C589A631F27803600E63DD1 /* Ball.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
 		8CAE16891F2BAEC300672226 /* Obstacle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
+		8CAE168B1F2FC51300672226 /* Levels1.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Levels1.sks; sourceTree = "<group>"; };
+		8CAE168D1F30B9A700672226 /* Area1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Area1.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +77,8 @@
 				8C54C1E31F28D73900709613 /* ScoreArea.swift */,
 				8C589A4D1F262FA900E63DD1 /* Actions.sks */,
 				8C589A4F1F262FA900E63DD1 /* GameScene.swift */,
+				8CAE168D1F30B9A700672226 /* Area1.swift */,
+				8CAE168B1F2FC51300672226 /* Levels1.sks */,
 				8CAE16891F2BAEC300672226 /* Obstacle.swift */,
 				8C589A631F27803600E63DD1 /* Ball.swift */,
 				8C589A511F262FA900E63DD1 /* GameViewController.swift */,
@@ -145,6 +151,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8CAE168C1F2FC51300672226 /* Levels1.sks in Resources */,
 				8C589A551F262FA900E63DD1 /* Main.storyboard in Resources */,
 				8C589A4C1F262FA900E63DD1 /* GameScene.sks in Resources */,
 				8C589A571F262FA900E63DD1 /* Assets.xcassets in Resources */,
@@ -160,6 +167,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8CAE168E1F30B9A700672226 /* Area1.swift in Sources */,
 				8CAE168A1F2BAEC300672226 /* Obstacle.swift in Sources */,
 				8C589A501F262FA900E63DD1 /* GameScene.swift in Sources */,
 				8C589A521F262FA900E63DD1 /* GameViewController.swift in Sources */,
