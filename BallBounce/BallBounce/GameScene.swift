@@ -49,6 +49,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         testObstacle = childNode(withName: "testObstacle") as! Obstacle
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         physicsWorld.contactDelegate = self
+        restartButton = childNode(withName: "restartButton") as! MSButtonNode
+        restartButton.selectedHandler = { [unowned self] in // adding this in the selection handler curbs a memory leak
+            /* Grab reference to our SpriteKit view */
+            let skView = self.view as SKView!
+            /* Load Game scene */
+            let scene = GameScene(fileNamed:"Level_1") as GameScene!
+            /* Ensure correct aspect mode */
+            scene?.scaleMode = .aspectFill
+            /* Restart game scene */
+            skView?.presentScene(scene)
+        }
     } // end of didMove
     
     
@@ -140,5 +151,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
     } // end of didBegin
+    
+    /* Make a Class method to load levels */
+    class func level(_ levelNumber: Int) -> GameScene? {
+        guard let scene = GameScene(fileNamed: "Level_\(levelNumber)") else {
+            return nil
+        }
+        scene.scaleMode = .aspectFit
+        return scene
+    }// end of class func level()
 
 } // end of GameScene
