@@ -29,11 +29,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var scoreLabel: SKLabelNode!
     var scoreUp: ScoreArea! //    these are for testing. eventually replace with an array
     var scoreDown: ScoreArea! //  of ScoreArea to be populated based on the level
-    var testObstacle: Obstacle! // will eventually change this to an array obstacles
+    var obstacle: Obstacle! // will eventually change this to an array obstacles
+    var obstacleArray: [Obstacle] = []
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 /* 60 FPS */
     var spawnTimer: CFTimeInterval = 0
     var gameState: GameState = .playing
     var restartButton: MSButtonNode!
+    var backButton: MSButtonNode!
     
     override func didMove(to view: SKView) {
         
@@ -46,7 +48,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreUp.setValue(amount: 50)
         scoreDown = childNode(withName: "scoreDown") as! ScoreArea
         scoreDown.setValue(amount: -50)
-        testObstacle = childNode(withName: "testObstacle") as! Obstacle
+        obstacle = childNode(withName: "obstacle") as! Obstacle
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         physicsWorld.contactDelegate = self
         restartButton = childNode(withName: "restartButton") as! MSButtonNode
@@ -54,7 +56,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             /* Grab reference to our SpriteKit view */
             let skView = self.view as SKView!
             /* Load Game scene */
-            let scene = GameScene(fileNamed:"Level_1") as GameScene!
+            let scene = GameScene(fileNamed:currentStage) as GameScene!
+            /* Ensure correct aspect mode */
+            scene?.scaleMode = .aspectFill
+            /* Restart game scene */
+            skView?.presentScene(scene)
+        }
+        backButton = childNode(withName: "backButton") as! MSButtonNode
+        backButton.selectedHandler = { [unowned self] in
+            /* Grab reference to our SpriteKit view */
+            let skView = self.view as SKView!
+            /* Load Game scene */
+            let scene = GameScene(fileNamed:"Menu1") as GameScene!
             /* Ensure correct aspect mode */
             scene?.scaleMode = .aspectFill
             /* Restart game scene */
@@ -77,10 +90,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-      /*  if let data = motionManager.accelerometerData {
+        if let data = motionManager.accelerometerData {
              ball1.position.x += CGFloat(Double((data.acceleration.x)) * 20)
              ball1.position.y += CGFloat(Double((data.acceleration.y)) * 10)
-        } */
+        }
         
         if ballArray.count <= ballLimit {
             spawnBalls()
@@ -93,7 +106,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let newBall = ball1.copy() as! Ball
             ballLayer.addChild(newBall)
             
-            let newPosition = CGPoint(x: 165, y: 560)
+            let newPosition = CGPoint(x: 165, y: 570)
             newBall.position = self.convert(newPosition, to: ballLayer)
             ballArray.append(newBall)
             spawnTimer = 0
@@ -113,11 +126,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if ( type(of: nodeA) == Obstacle.self && type(of: nodeB) == Ball.self ) || ( type(of: nodeA) == Ball.self && type(of: nodeB) == Obstacle.self ) {
             if type(of: nodeA) == Ball.self {
-                nodeA.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1))
+                nodeA.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1.7))
                 return
             }
          else { // this may be hitting the outer if statement. make into an else if
-            nodeB.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1))
+            nodeB.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1.7))
             return
             }
         }

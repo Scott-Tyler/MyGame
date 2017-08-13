@@ -13,6 +13,8 @@ enum selectedLevel{
     case one, two, three, four, five, six, seven, eight, nine, ten
 }
 
+var currentStage: String = ""
+
 class Menu1: SKScene {
     
     // all buttons declared here.
@@ -97,11 +99,12 @@ class Menu1: SKScene {
         }
         
         /* 2) Load Game scene */
-        if chosenLevel != "1" { // remove this later, only for testing
-            chosenLevel = "1" // remove this later, only for testing
-        }
+   //     if chosenLevel != "1" { // remove this later, only for testing
+   //         chosenLevel = "1" // remove this later, only for testing
+   //     }
         
         print("Level_\(lvl)")
+        currentStage = "Level_\(lvl)"
         
         guard let scene = GameScene(fileNamed: "Level_\(lvl)") else {
             print("Could not load GameScene with level \(chosenLevel)")
