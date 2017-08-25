@@ -9,11 +9,14 @@
 import Foundation
 import SpriteKit
 
-enum selectedLevel{
-    case one, two, three, four, five, six, seven, eight, nine, ten
-}
-
 var currentStage: String = ""
+var currentWorld: Int = 1
+
+let defaults = UserDefaults.standard // initializes user defaults to allow saving of highScores from levels
+
+//enum levelLockState {
+//    case locked, unlocked
+//}
 
 class Menu1: SKScene {
     
@@ -31,11 +34,13 @@ class Menu1: SKScene {
     var stage10: MSButtonNode!
     var previousWorld: MSButtonNode!
     var nextWorld: MSButtonNode!
-    var back: MSButtonNode!
-    var start: MSButtonNode!
-    let world: String = "1"
-    var chosenLevel = ""
+    var creditsButton: MSButtonNode!
+    var startButton: MSButtonNode!
     var buttonArray = [MSButtonNode]()
+    var targetScoreLabel: SKLabelNode! // will change based on selected level
+    var highScoreLabel: SKLabelNode! // will change based on selected level
+  //  var lockedState: levelLockState = .locked
+  //  var targetScoreDict: Dictionary[String, Int]()
     
     override func didMove(to view: SKView) {
         // set code connections for buttons here
@@ -51,33 +56,34 @@ class Menu1: SKScene {
         stage10 = childNode(withName: "10") as! MSButtonNode
         previousWorld = childNode(withName: "previousWorld") as! MSButtonNode
         nextWorld = childNode(withName: "nextWorld") as! MSButtonNode
-        back = childNode(withName: "back") as! MSButtonNode
-        start = childNode(withName: "start") as! MSButtonNode
+        targetScoreLabel = childNode(withName: "targetScoreLabel") as! SKLabelNode
+        highScoreLabel = childNode(withName: "highScoreLabel") as!  SKLabelNode
+        creditsButton = childNode(withName: "creditsButton") as! MSButtonNode
+        startButton = childNode(withName: "startButton") as! MSButtonNode
         setButtonArray()
         for button in buttonArray {
-            print(1)
             button.selectedHandler = { [unowned self] in
-                self.chosenLevel = button.name!
-                
-           //     self.view?.presentScene(GameScene(fileNamed: "GameScene"))
-                //self.loadLevel(lvl: self.chosenLevel)
-                print(self.chosenLevel)
+                currentStage = "Level_\(button.name!)"
+                let highScore = defaults.integer(forKey: currentStage)
+                self.highScoreLabel.text = String(highScore) // set highScoreLabel to that of selected level
+            }
+        } // end array of level buttons
+        startButton.selectedHandler = { [unowned self] in
+            if currentStage != "" {
+                self.loadLevel(lvl: currentStage)
             }
         }
-        start.selectedHandler = { [unowned self] in
-            self.loadLevel(lvl: self.chosenLevel)
+        creditsButton.selectedHandler = { [unowned self] in
+            self.loadScene(lvl: "Credits")
+        }
+        
+        nextWorld.selectedHandler = { [unowned self] in
+            currentWorld += 1
+            self.loadScene(lvl: "Menu2")
         }
     }
     
-    /*  func buttonSelect(name: String) -> String {
-     
-     let selectedLevel = ""
-     return selectedLevel
-     // possible to use the components String func to get the level select from world and button names
-     } */
-    
-    
-    // function to make add all the level buttons into an array for use later in the start button code
+    // function to add all the level buttons into an array for use later in the start button code
     func setButtonArray() {
         buttonArray.append(stage1)
         buttonArray.append(stage2)
@@ -97,30 +103,43 @@ class Menu1: SKScene {
             print("Could not get Skview")
             return
         }
-        
         /* 2) Load Game scene */
-   //     if chosenLevel != "1" { // remove this later, only for testing
-   //         chosenLevel = "1" // remove this later, only for testing
-   //     }
+        guard let scene = GameScene(fileNamed: lvl) else {
+            print("Could not load GameScene with Level \(lvl)")
+            return
+         }
+ 
+        /* 3) Ensure correct aspect mode */
+        scene.scaleMode = .aspectFit
+        /* Show debug */
+        skView.showsPhysics = false
+        skView.showsDrawCount = false
+        skView.showsFPS = false
+        /* 4) Start game scene */
+        skView.presentScene(scene)
+    }
+    
+    func loadScene(lvl:String) {
+        /* 1) Grab reference to our SpriteKit view */
+        guard let skView = self.view as SKView! else {
+            print("Could not get Skview")
+            return
+        }
+        /* 2) Load Game scene */
+        // currentStage = lvl
         
-        print("Level_\(lvl)")
-        currentStage = "Level_\(lvl)"
-        
-        guard let scene = GameScene(fileNamed: "Level_\(lvl)") else {
-            print("Could not load GameScene with level \(chosenLevel)")
+        guard let scene = SKScene(fileNamed: lvl) else {
+            print("Could not load GameScene with Level \(lvl)")
             return
         }
         
         /* 3) Ensure correct aspect mode */
         scene.scaleMode = .aspectFit
-        
         /* Show debug */
-        skView.showsPhysics = true
-        skView.showsDrawCount = true
-        skView.showsFPS = true
-        
+        skView.showsPhysics = false
+        skView.showsDrawCount = false
+        skView.showsFPS = false
         /* 4) Start game scene */
         skView.presentScene(scene)
     }
-    
 }

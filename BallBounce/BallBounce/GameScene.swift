@@ -25,12 +25,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ballArray: [Ball] = []
     var motionManager: CMMotionManager!
     var ballLimit: Int = 50 // eventually this will change based on which lelvel is loaded
-    var score: Int = 0 // start at zero for each level, eventually will store hi-score for each level
+    var score: Int = 0 // start at zero for each level.
     var scoreLabel: SKLabelNode!
-    var scoreUp: ScoreArea! //    these are for testing. eventually replace with an array
-    var scoreDown: ScoreArea! //  of ScoreArea to be populated based on the level
-    var obstacle: Obstacle! // will eventually change this to an array obstacles
-    var obstacleArray: [Obstacle] = []
+    var scoreUp: ScoreArea!
+    var scoreDown: ScoreArea!
+    var obstacle: Obstacle!
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 /* 60 FPS */
     var spawnTimer: CFTimeInterval = 0
     var gameState: GameState = .playing
@@ -58,18 +57,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             /* Load Game scene */
             let scene = GameScene(fileNamed:currentStage) as GameScene!
             /* Ensure correct aspect mode */
-            scene?.scaleMode = .aspectFill
+            scene?.scaleMode = .aspectFit
             /* Restart game scene */
             skView?.presentScene(scene)
+            print(currentStage)
         }
         backButton = childNode(withName: "backButton") as! MSButtonNode
         backButton.selectedHandler = { [unowned self] in
             /* Grab reference to our SpriteKit view */
             let skView = self.view as SKView!
             /* Load Game scene */
-            let scene = GameScene(fileNamed:"Menu1") as GameScene!
+            let menu = "Menu\(currentWorld)"
+            let scene = GameScene(fileNamed:menu) as GameScene!
             /* Ensure correct aspect mode */
-            scene?.scaleMode = .aspectFill
+            scene?.scaleMode = .aspectFit
             /* Restart game scene */
             skView?.presentScene(scene)
         }
@@ -99,6 +100,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             spawnBalls()
             spawnTimer += fixedDelta
         }
+        setHighScore()
     } // end of update
     
     func spawnBalls() {
@@ -110,7 +112,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             newBall.position = self.convert(newPosition, to: ballLayer)
             ballArray.append(newBall)
             spawnTimer = 0
-        }
+        } 
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -124,14 +126,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let nodeA = contactA.node!
         let nodeB = contactB.node!
         
+        
+        //  contact between the ball and obstacle to bounce the balls
         if ( type(of: nodeA) == Obstacle.self && type(of: nodeB) == Ball.self ) || ( type(of: nodeA) == Ball.self && type(of: nodeB) == Obstacle.self ) {
             if type(of: nodeA) == Ball.self {
-                nodeA.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1.7))
-                return
+                if nodeA.position.y > nodeB.position.y {
+                    nodeA.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1.7))
+                    return
+                }
             }
          else { // this may be hitting the outer if statement. make into an else if
-            nodeB.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1.7))
-            return
+            if nodeB.position.y > nodeA.position.y {
+                nodeB.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1.7))
+                return
+                }
             }
         }
         // code that checks if a ball comes in contact with  a scoreArea
@@ -160,6 +168,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeB.removeFromParent()
             }
             return
+        } else if ( type(of: nodeA) == Ball.self &&  nodeB.name == "scoreUpHigh" ) || ( nodeA.name == "scoreUpHigh" && type(of: nodeB) == Ball.self ){
+            /* Increment score */
+            score += 150
+            /* Update score label */
+            scoreLabel.text = String(score)
+            /* We can return now */
+            if type(of: nodeA) == Ball.self {
+                nodeA.removeFromParent()
+            } else {
+                nodeB.removeFromParent()
+            }
+            return
         } else {
             return
         }
@@ -173,5 +193,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scene.scaleMode = .aspectFit
         return scene
     }// end of class func level()
+    
+    // function to check score against high score and set it if needed
+    func setHighScore() {
+        let prevScore = defaults.integer(forKey: currentStage)
+        if score > prevScore {
+            defaults.set(score, forKey: currentStage)
+        }
+ //       print(defaults.integer(forKey: currentStage))
+ //       print(currentStage)
+    }
 
 } // end of GameScene
